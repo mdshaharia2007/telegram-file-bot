@@ -1,6 +1,6 @@
 import asyncio
 import sqlite3
-from pyrogram import Client, filters
+from pyrogram import Client, filters, idle
 from pyrogram.errors import (
     FloodWait,
     MessageIdInvalid,
@@ -164,4 +164,12 @@ async def stats_handler(client, message):
     total = get_file_stats(int(file_id))
     await message.reply(f"📊 **ফাইল আইডি `{file_id}` এর তথ্য:**\nইউজারদের মোট ডাউনলোড: `{total}` বার।")
 
-app.run()
+# --- বট স্টার্ট প্রসেস (Render এ Event Loop সমস্যা সমাধানের জন্য) ---
+async def main():
+    await app.start()
+    print("Bot Started Successfully!")
+    await idle()
+    await app.stop()
+
+if __name__ == "__main__":
+    asyncio.run(main())
