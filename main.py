@@ -1,4 +1,11 @@
 import asyncio
+
+# Render / Python 3.11+ Event Loop Fix
+try:
+    asyncio.get_event_loop()
+except RuntimeError:
+    asyncio.set_event_loop(asyncio.new_event_loop())
+
 import sqlite3
 from pyrogram import Client, filters, idle
 from pyrogram.errors import (
@@ -121,7 +128,7 @@ async def start_handler(client, message):
             update_and_get_downloads(file_id)
 
     except PeerIdInvalid:
-        await message.reply("⚠️ বট চ্যানেলটিকে চিনতে পারছে না। Admin পারমিশন চেক করুন।")
+        await message.reply("⚠️ বট চ্যানেলটিকে চিনতে পারছে চ্যালেঞ্জ। Admin পারমিশন চেক করুন।")
     except MessageIdInvalid:
         await message.reply(f"⚠️ {file_id} নম্বর ফাইলটি পাওয়া যায়নি বা মুছে ফেলা হয়েছে।")
     except FloodWait as e:
