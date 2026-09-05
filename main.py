@@ -1,4 +1,7 @@
 import asyncio
+import os
+import threading
+from flask import Flask
 
 # Render / Python 3.11+ Event Loop Fix
 try:
@@ -16,6 +19,21 @@ from pyrogram.errors import (
     UserNotParticipant
 )
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
+
+# --- Render Port Binding Fix (Web Service Free Tier) ---
+flask_app = Flask(__name__)
+
+@flask_app.route('/')
+def home():
+    return "Bot is running successfully!"
+
+def run_flask():
+    port = int(os.environ.get("PORT", 10000))
+    flask_app.run(host="0.0.0.0", port=port)
+
+# ব্যাকগ্রাউন্ডে ওয়েব সার্ভার চালু রাখা যাতে Render পোর্ট এরর না দেয়
+threading.Thread(target=run_flask, daemon=True).start()
+# -----------------------------------------------------
 
 BOT_TOKEN = "8773057745:AAF9r75CmN6UeDlO5n5f0XUlIEzg-OgmwKM"
 API_ID = 15162741
@@ -128,7 +146,7 @@ async def start_handler(client, message):
             update_and_get_downloads(file_id)
 
     except PeerIdInvalid:
-        await message.reply("⚠️ বট চ্যানেলটিকে চিনতে পারছে চ্যালেঞ্জ। Admin পারমিশন চেক করুন।")
+        await message.reply("⚠️ বট চ্যানেলটিকে চিনতে পারছে না। Admin পারমিশন চেক করুন।")
     except MessageIdInvalid:
         await message.reply(f"⚠️ {file_id} নম্বর ফাইলটি পাওয়া যায়নি বা মুছে ফেলা হয়েছে।")
     except FloodWait as e:
@@ -171,7 +189,7 @@ async def stats_handler(client, message):
     total = get_file_stats(int(file_id))
     await message.reply(f"📊 **ফাইল আইডি `{file_id}` এর তথ্য:**\nইউজারদের মোট ডাউনলোড: `{total}` বার।")
 
-# --- বট স্টার্ট প্রসেস (Render এ Event Loop সমস্যা সমাধানের জন্য) ---
+# --- বট স্টার্ট প্রসেস ---
 async def main():
     await app.start()
     print("Bot Started Successfully!")
