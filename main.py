@@ -3,24 +3,7 @@ import os
 import threading
 from flask import Flask
 
-# Render / Python 3.11+ Event Loop Fix
-try:
-    asyncio.get_event_loop()
-except RuntimeError:
-    asyncio.set_event_loop(asyncio.new_event_loop())
-
-import sqlite3
-from pyrogram import Client, filters, idle
-from pyrogram.errors import (
-    FloodWait,
-    MessageIdInvalid,
-    RPCError,
-    PeerIdInvalid,
-    UserNotParticipant
-)
-from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
-
-# --- Render Port Binding Fix (Web Service Free Tier) ---
+# --- Render Port Binding Fix (Flask Web Server) ---
 flask_app = Flask(__name__)
 
 @flask_app.route('/')
@@ -31,9 +14,20 @@ def run_flask():
     port = int(os.environ.get("PORT", 10000))
     flask_app.run(host="0.0.0.0", port=port)
 
-# ব্যাকগ্রাউন্ডে ওয়েব সার্ভার চালু রাখা যাতে Render পোর্ট এরর না দেয়
+# ব্যাকগ্রাউন্ডে ফ্লাস্ক সার্ভার চালু রাখা হচ্ছে
 threading.Thread(target=run_flask, daemon=True).start()
-# -----------------------------------------------------
+# --------------------------------------------------
+
+import sqlite3
+from pyrogram import Client, filters
+from pyrogram.errors import (
+    FloodWait,
+    MessageIdInvalid,
+    RPCError,
+    PeerIdInvalid,
+    UserNotParticipant
+)
+from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 
 BOT_TOKEN = "8773057745:AAF9r75CmN6UeDlO5n5f0XUlIEzg-OgmwKM"
 API_ID = 15162741
@@ -189,12 +183,4 @@ async def stats_handler(client, message):
     total = get_file_stats(int(file_id))
     await message.reply(f"📊 **ফাইল আইডি `{file_id}` এর তথ্য:**\nইউজারদের মোট ডাউনলোড: `{total}` বার।")
 
-# --- বট স্টার্ট প্রসেস ---
-async def main():
-    await app.start()
-    print("Bot Started Successfully!")
-    await idle()
-    await app.stop()
-
-if __name__ == "__main__":
-    asyncio.run(main())
+app.run()
