@@ -29,8 +29,8 @@ from pyrogram.errors import (
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 
 BOT_TOKEN = "8773057745:AAF9r75CmN6UeDlO5n5f0XUlIEzg-OgmwKM"
-API_ID = 15162741
-API_HASH = "549c8dc229374dc9f9bf2f3a6bc25daa"
+API_ID = 152741
+API_HASH = 
 
 STORAGE_CHANNEL_ID = -1003870581744
 FORCE_SUB_CHANNEL = "BlackZone2007"
